@@ -5,27 +5,41 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
 using Cinemachine;
+using Unity.Mathematics;
+using System;
+using JetBrains.Annotations;
 
 public class Player : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Animator animator;
+
     [SerializeField] GameObject glow;
     [SerializeField] GameObject cursor;
     [SerializeField] CinemachineVirtualCamera virtualCamera;
+    [SerializeField] GameObject castRenderer;
+    [SerializeField] LayerMask ignoreLayer;
+
     public float movementSpeed;
-    public bool ableToMove;
-    public bool inCombat;
+    public float castRange;
+    public float castCooldown;
+    private bool castDebounce;
     private Color originalCursorColor;
     private float horizontal, vertical;
 
+    [HideInInspector] public bool ableToMove;
+    [HideInInspector] public bool inCombat;
     [HideInInspector] public bool doingAction;
 
     void Start()
     {
+        //Assignments
         originalCursorColor = cursor.GetComponent<Image>().color;
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+
+        //Default Values
+        castRenderer.GetComponent<LineRenderer>().useWorldSpace = true;
     }
 
     void Update()
@@ -33,14 +47,12 @@ public class Player : MonoBehaviour
         //Camera Controls
         CameraMove();
 
+        //Abilities
+        Cast();
+
         if (ableToMove == true && doingAction == false)
         {
             Move();
-
-            if (inCombat == true)
-            {
-                Cast();
-            }
         }
         else if (doingAction == true)
         {
@@ -130,10 +142,10 @@ public class Player : MonoBehaviour
 
     private void CameraMove()
     {
-        double moveIndex = 2;
+        double moveIndex = 3;
         double movePercentageHorizontal = 0;
         double movePercentageVertical = 0;
-        double screenPercent = 0.2;
+        double screenPercent = 0.15;
 
         //Horizontal
         //Right
@@ -167,8 +179,6 @@ public class Player : MonoBehaviour
             movePercentageVertical = -movePercentageVertical;
         }
 
-        print(movePercentageHorizontal);
-
         virtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset.x = (float)(moveIndex * movePercentageHorizontal);
         virtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset.y = (float)(moveIndex * movePercentageVertical);
     }
@@ -177,28 +187,79 @@ public class Player : MonoBehaviour
     {
         Color glowColor = glow.GetComponent<SpriteRenderer>().color;
         GameObject hitEnemy = null;
+        
+        float castLenght = Vector2.Distance(Camera.main.ScreenToWorldPoint(Input.mousePosition), gameObject.transform.position);
+        float minimumRange = 3f;
+
+        //Can't exceed cast range
+        if (castLenght > castRange)
+        {
+            castLenght = castRange;
+        }
+        else if (castLenght < minimumRange)
+        {
+            castLenght = minimumRange;
+        }
 
         //Change Cursor Color On Hover
-        RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+        RaycastHit2D cursorOver = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
 
-        if (hit.collider != null && hit.transform.tag == "Human")
+        if (cursorOver.collider != null && cursorOver.transform.tag == "Human")
         {
             cursor.GetComponent<MouseCursor>().ChangeCursor(2);
-            hitEnemy = hit.transform.gameObject;
         }
         else 
         {
             cursor.GetComponent<MouseCursor>().ChangeCursor(1);
         }
 
-        //Click
-        if (Input.GetKeyDown(Controls.cast))
+        //Use
+        if (Input.GetKeyDown(Controls.cast) && castDebounce == false)
         {
+            //Cooldown
+            castDebounce = true;
+            LeanTween.value(castRenderer, 0f, 1f, castCooldown).setOnComplete(() => { castDebounce = false; });
+
             StopMove();
             LeanTween.cancel(glow);
 
+            //Instiantiate Cast Visual
+            GameObject castInstance = Instantiate(castRenderer);
+            castInstance.transform.SetParent(gameObject.transform, false);
+
             //Animation
             animator.SetTrigger("Cast");
+
+            //Cast the Spell
+            Vector2 cursorDirection = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - gameObject.transform.position).normalized;
+            RaycastHit2D spellHit = Physics2D.Raycast(gameObject.transform.position, cursorDirection, castLenght, ~ignoreLayer);
+
+            //Display Cast Visual
+            castInstance.GetComponent<LineRenderer>().enabled = true;
+            castInstance.GetComponent<LineRenderer>().SetPosition(0, gameObject.transform.position);
+
+            //If hit something display that position
+            if (spellHit.collider != null)
+            {
+                castInstance.GetComponent<LineRenderer>().SetPosition(1, spellHit.point);
+            }
+            //Display End-of-Ray position
+            else
+            {
+                Ray2D ray = new Ray2D(gameObject.transform.position, cursorDirection);
+                Vector2 endPoint = ray.GetPoint(castLenght);
+
+                castInstance.GetComponent<LineRenderer>().SetPosition(1, endPoint);
+            }
+
+            //Human Hit
+            if (spellHit.collider != null && spellHit.transform.tag == "Human")
+            {
+                hitEnemy = spellHit.transform.gameObject;
+            }
+
+            //Cast Fade
+            castInstance.GetComponent<CastBehavior>().SelfDestruct();
 
             //Rotate Player
             //Turn Right
