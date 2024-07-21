@@ -14,19 +14,26 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
 
+    [Header("Linked Objects")]
     [SerializeField] GameObject glow;
+    [SerializeField] GameObject castRenderer;
     [SerializeField] GameObject cursor;
     [SerializeField] CinemachineVirtualCamera virtualCamera;
-    [SerializeField] GameObject castRenderer;
+
+    [Header("Layer Masks")]
     [SerializeField] LayerMask ignoreLayer;
 
+    [Header("Attributes")]
+    public float maxHealth = 100f;
     public float movementSpeed;
     public float castRange;
     public float castCooldown;
+
     private bool castDebounce;
     private Color originalCursorColor;
     private float horizontal, vertical;
 
+    [HideInInspector] public float health;
     [HideInInspector] public bool ableToMove;
     [HideInInspector] public bool inCombat;
     [HideInInspector] public bool doingAction;
@@ -40,6 +47,7 @@ public class Player : MonoBehaviour
 
         //Default Values
         castRenderer.GetComponent<LineRenderer>().useWorldSpace = true;
+        health = maxHealth;
 
         Color glowColor = glow.GetComponent<SpriteRenderer>().color;
         glow.GetComponent<SpriteRenderer>().color = new Color(glowColor.r, glowColor.g, glowColor.b, 0f);
