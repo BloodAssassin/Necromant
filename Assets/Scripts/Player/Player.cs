@@ -66,7 +66,15 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         //Player Movement
-        rb.velocity = new Vector2 (horizontal, vertical) * movementSpeed;
+        Vector2 movement = new Vector2(horizontal, vertical);
+
+        //Fix Diagonal Speed
+        if (movement.magnitude > 1f)
+        {
+            movement.Normalize();
+        }
+
+        rb.velocity = movement * movementSpeed;
 
         //Turn Direction
 
