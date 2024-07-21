@@ -40,6 +40,9 @@ public class Player : MonoBehaviour
 
         //Default Values
         castRenderer.GetComponent<LineRenderer>().useWorldSpace = true;
+
+        Color glowColor = glow.GetComponent<SpriteRenderer>().color;
+        glow.GetComponent<SpriteRenderer>().color = new Color(glowColor.r, glowColor.g, glowColor.b, 0f);
     }
 
     void Update()
