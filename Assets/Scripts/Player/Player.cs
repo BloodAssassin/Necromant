@@ -20,11 +20,15 @@ public class Player : MonoBehaviour
     [SerializeField] GameObject cursor;
     [SerializeField] CinemachineVirtualCamera virtualCamera;
 
+    [Header("Abilities")]
+    [SerializeField] List<GameObject> spells = new List<GameObject>();
+
     [Header("Layer Masks")]
     [SerializeField] LayerMask ignoreLayer;
 
     [Header("Attributes")]
     public float maxHealth = 100f;
+    public float castDamage = 30f;
     public float movementSpeed;
     public float castRange;
     public float castCooldown;
@@ -205,7 +209,7 @@ public class Player : MonoBehaviour
     private void Cast()
     {
         Color glowColor = glow.GetComponent<SpriteRenderer>().color;
-        GameObject hitEnemy = null;
+        //GameObject hitEnemy = null;
         
         float castLenght = Vector2.Distance(Camera.main.ScreenToWorldPoint(Input.mousePosition), gameObject.transform.position);
         float minimumRange = 3f;
@@ -225,7 +229,10 @@ public class Player : MonoBehaviour
 
         if (cursorOver.collider != null && cursorOver.transform.tag == "Human")
         {
-            cursor.GetComponent<MouseCursor>().ChangeCursor(2);
+            if (cursorOver.collider.GetComponent<Guard>() && cursorOver.collider.GetComponent<Guard>().health > 0)
+            {
+                cursor.GetComponent<MouseCursor>().ChangeCursor(2);
+            }
         }
         else 
         {
@@ -243,8 +250,9 @@ public class Player : MonoBehaviour
             LeanTween.cancel(glow);
 
             //Instiantiate Cast Visual
-            GameObject castInstance = Instantiate(castRenderer);
-            castInstance.transform.SetParent(gameObject.transform, false);
+            //GameObject castInstance = Instantiate(castRenderer);
+            //castInstance.transform.SetParent(gameObject.transform, false);
+            GameObject castInstance = Instantiate(spells[0]);
 
             //Animation
             animator.SetTrigger("Cast");
@@ -254,31 +262,41 @@ public class Player : MonoBehaviour
             RaycastHit2D spellHit = Physics2D.Raycast(gameObject.transform.position, cursorDirection, castLenght, ~ignoreLayer);
 
             //Display Cast Visual
-            castInstance.GetComponent<LineRenderer>().enabled = true;
-            castInstance.GetComponent<LineRenderer>().SetPosition(0, gameObject.transform.position);
+            //castInstance.GetComponent<LineRenderer>().enabled = true;
+            //castInstance.GetComponent<LineRenderer>().SetPosition(0, gameObject.transform.position);
 
-            //If hit something display that position
-            if (spellHit.collider != null)
-            {
-                castInstance.GetComponent<LineRenderer>().SetPosition(1, spellHit.point);
-            }
-            //Display End-of-Ray position
-            else
-            {
-                Ray2D ray = new Ray2D(gameObject.transform.position, cursorDirection);
-                Vector2 endPoint = ray.GetPoint(castLenght);
+            //Cast Rotation
+            Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorldPosition.z = 0;
 
-                castInstance.GetComponent<LineRenderer>().SetPosition(1, endPoint);
-            }
+            Vector3 direction = mouseWorldPosition - transform.position;
+
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            castInstance.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+
+            //Other Cast Values
+            castInstance.transform.position = spells[0].transform.position;
+            castInstance.transform.localScale = spells[0].transform.localScale * transform.localScale.y;
+
+            //Activate
+            Ray2D ray = new Ray2D(gameObject.transform.position, cursorDirection);
+            Vector2 endPoint = ray.GetPoint(castLenght);
+            Vector2 startPoint = ray.GetPoint(2.5f);
+
+            castInstance.GetComponent<CastBehavior>().damage = castDamage;
+            castInstance.GetComponent<CastBehavior>().endPoint = endPoint;
+            castInstance.GetComponent<CastBehavior>().startPoint = startPoint;
+            castInstance.SetActive(true);
 
             //Human Hit
-            if (spellHit.collider != null && spellHit.transform.tag == "Human")
-            {
-                hitEnemy = spellHit.transform.gameObject;
-            }
+            //if (spellHit.collider != null && spellHit.transform.tag == "Human")
+            //{
+            //    hitEnemy = spellHit.transform.gameObject;
+            //}
 
             //Cast Fade
-            castInstance.GetComponent<CastBehavior>().SelfDestruct();
+            //castInstance.GetComponent<CastBehavior>().SelfDestruct();
 
             //Rotate Player
             //Turn Right
@@ -300,11 +318,6 @@ public class Player : MonoBehaviour
 
                 if (val == 1f)
                 {
-                    if (hitEnemy != null)
-                    {
-                        Destroy(hitEnemy);
-                    }
-
                     //Wait
                     LeanTween.value(glow, 0f, 1f, 1f).setOnComplete(() =>
                     {

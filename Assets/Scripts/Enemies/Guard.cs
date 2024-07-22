@@ -1,3 +1,4 @@
+using Cinemachine.Utility;
 using Pathfinding;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,33 +9,38 @@ public class Guard : MonoBehaviour
 {
     [Header("Linked Objects")]
     [SerializeField] GameObject player;
+    [SerializeField] CircleCollider2D distanceCollider;
 
     [Header("Properties")]
     [SerializeField] float walkSpeed;
     [SerializeField] float maxHealth;
+    public float health;
     [SerializeField] float damage;
 
     [Header("Attack Points")]
     [SerializeField] Transform leftPoint;
     [SerializeField] Transform rightPoint;
 
+    private bool dead = false;
     private Vector3 previousPosition;
-    private float pointDistance = Mathf.Infinity;
     private Rigidbody2D rb;
     private Animator animator;
     private AIPath pathFinding;
-    [HideInInspector] public float health;
+    private AIDestinationSetter destination;
+    private float lastHealth;
 
     void Start()
     {
         //Assignments
         pathFinding= GetComponent<AIPath>();
+        destination= GetComponent<AIDestinationSetter>();
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        animator.SetFloat("Health", health);
 
         //Default Values
         health = maxHealth;
-
+        lastHealth = health;
         previousPosition = transform.position;
 
         //Pathfinding
@@ -75,11 +81,45 @@ public class Guard : MonoBehaviour
             }
         }
         //Dead
-        else
+        else if(dead == false && health == 0)
         {
             animator.SetBool("Walking", false);
             animator.SetBool("Attack", false);
+            Death();
         }
+
+        //Damaged
+        if (lastHealth != health)
+        {
+            animator.SetFloat("Health", health);
+            lastHealth = health;
+            Freeze();
+
+            if (health < 0)
+            {
+                health = 0;
+            }
+        }
+    }
+
+    private void Freeze()
+    {
+        animator.SetBool("Frozen", true);
+        animator.speed = 0;
+        pathFinding.maxSpeed = 0;
+
+        LeanTween.value(gameObject, 0f, 1f, 0.25f).setOnComplete(() =>
+        {
+            animator.speed = 1f;
+            pathFinding.maxSpeed = walkSpeed;
+            animator.SetBool("Walking", true);
+
+            //Delay
+            LeanTween.value(gameObject, 0f, 1f, 0.25f).setOnComplete(() =>
+            {
+                animator.SetBool("Frozen", false);
+            });
+        });
     }
 
     private void Walking()
@@ -106,7 +146,7 @@ public class Guard : MonoBehaviour
                 }
             }
         }
-        else
+        else if (animator.speed != 0 && animator.GetBool("Frozen") == false)
         {
             animator.SetBool("Walking", false);
         }
@@ -116,7 +156,7 @@ public class Guard : MonoBehaviour
 
     private void Attack()
     {
-        if (pathFinding.reachedDestination == true && player.GetComponent<Player>().health > 0)
+        if (player.GetComponent<Player>().health > 0)
         {
             animator.SetBool("Attack", true);
         }
@@ -124,5 +164,19 @@ public class Guard : MonoBehaviour
         {
             animator.SetBool("Attack", false);
         }
+    }
+
+    private void StopMoving()
+    {
+        destination.target = transform;
+    }
+
+    private void Death()
+    {
+        dead = true;
+        StopMoving();
+        animator.SetTrigger("Death");
+
+        distanceCollider.enabled = false;
     }
 }

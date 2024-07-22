@@ -348,12 +348,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
+  distanceCollider: {fileID: 8733546061286711291}
   walkSpeed: 3
   maxHealth: 80
+  health: 80
   damage: 30
   leftPoint: {fileID: 0}
   rightPoint: {fileID: 0}
-  health: 0
 --- !u!114 &7673856256162967127
 MonoBehaviour:
   m_ObjectHideFlags: 0
