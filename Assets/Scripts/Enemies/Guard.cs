@@ -9,11 +9,12 @@ public class Guard : MonoBehaviour
 {
     [Header("Linked Objects")]
     [SerializeField] GameObject player;
+    [SerializeField] GameObject character;
     [SerializeField] CircleCollider2D distanceCollider;
 
     [Header("Properties")]
     [SerializeField] float walkSpeed;
-    [SerializeField] float maxHealth;
+    public float maxHealth;
     public float health;
     [SerializeField] float damage;
 
@@ -132,17 +133,17 @@ public class Guard : MonoBehaviour
             //Right
             if (pathFinding.desiredVelocity.x > 0f)
             {
-                if (transform.localScale.x < 0f)
+                if (character.transform.localScale.x < 0f)
                 {
-                    transform.localScale = new Vector2(-transform.localScale.x, transform.localScale.y);
+                    character.transform.localScale = new Vector2(-character.transform.localScale.x, character.transform.localScale.y);
                 }
             }
             //Left
             else if (pathFinding.desiredVelocity.x < 0f)
             {
-                if (transform.localScale.x > 0f)
+                if (character.transform.localScale.x > 0f)
                 {
-                    transform.localScale = new Vector2(-transform.localScale.x, transform.localScale.y);
+                    character.transform.localScale = new Vector2(-character.transform.localScale.x, character.transform.localScale.y);
                 }
             }
         }
