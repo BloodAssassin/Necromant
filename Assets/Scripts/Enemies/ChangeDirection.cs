@@ -8,6 +8,7 @@ using UnityEditor;
 public class ChangeDirection : MonoBehaviour
 {
     public GameObject character;
+    public GameObject flash;
 }
 
 #if UNITY_EDITOR
@@ -31,6 +32,7 @@ class ChangeDirectionEditor : Editor
         if (GUILayout.Button("Change Direction"))
         {
             changeDirection.character.transform.localScale = new Vector2(-changeDirection.character.transform.localScale.x, changeDirection.character.transform.localScale.y);
+            changeDirection.flash.transform.localScale = new Vector2(-changeDirection.flash.transform.localScale.x, changeDirection.flash.transform.localScale.y);
             UpdateDirection();
         }
 
