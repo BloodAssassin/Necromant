@@ -10,4 +10,5 @@ public class Controls : MonoBehaviour
     public static KeyCode moveLeft = KeyCode.A;
     public static KeyCode moveRight = KeyCode.D;
     public static KeyCode cast = KeyCode.Mouse0;
+    public static KeyCode reanimate = KeyCode.R;
 }

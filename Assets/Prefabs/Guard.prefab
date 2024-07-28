@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -1.394, z: 0}
-  m_LocalScale: {x: 7.845215, y: 7.8452153, z: 7.8452153}
+  m_LocalScale: {x: 7.845215, y: 7.8452153, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7827411219638704525}
@@ -288,7 +288,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &2831707374536281240
+--- !u!1 &3799684970620825917
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -296,37 +296,37 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6540490640111966955}
-  - component: {fileID: 5393165331042347140}
-  m_Layer: 0
+  - component: {fileID: 2062212180250939044}
+  - component: {fileID: 3065701125210338779}
+  m_Layer: 6
   m_Name: Light 2D
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6540490640111966955
+--- !u!4 &2062212180250939044
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2831707374536281240}
+  m_GameObject: {fileID: 3799684970620825917}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: 0.00581506, w: 0.99998313}
-  m_LocalPosition: {x: -0, y: 0.05, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.05, y: 0.11, z: -0.5747981}
   m_LocalScale: {x: 2.6006498, y: 2.6006498, z: 2.6006498}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7827411219638704525}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5393165331042347140
+--- !u!114 &3065701125210338779
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2831707374536281240}
+  m_GameObject: {fileID: 3799684970620825917}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
@@ -335,12 +335,12 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 3
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.114
+  m_FalloffIntensity: 0.525
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1
+  m_Intensity: 0.5
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
-  m_ApplyToSortingLayers: 550513920000000085431c40bbb021da
+  m_ApplyToSortingLayers: 55051392
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -358,8 +358,8 @@ MonoBehaviour:
     m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
-  m_PointLightInnerRadius: 1.13
-  m_PointLightOuterRadius: 2.02
+  m_PointLightInnerRadius: 1.16
+  m_PointLightOuterRadius: 4.3
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
@@ -546,7 +546,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -1.394, z: 0}
-  m_LocalScale: {x: 7.845215, y: 7.8452153, z: 7.8452153}
+  m_LocalScale: {x: 7.845215, y: 7.8452153, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7827411219638704525}
@@ -643,7 +643,7 @@ Transform:
   - {fileID: 2259028208358144789}
   - {fileID: 8909363270490129431}
   - {fileID: 3743001447778129047}
-  - {fileID: 6540490640111966955}
+  - {fileID: 2062212180250939044}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &4156820137191447657
@@ -726,18 +726,18 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.11720848, y: 0.050575614}
+  m_Offset: {x: -0.15164185, y: 0.050575614}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
+    pivot: {x: 0.5, y: 0.21875}
     oldSize: {x: 0.64, y: 0.64}
-    newSize: {x: 1, y: 1}
+    newSize: {x: 0.64, y: 0.64}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.4750938, y: 2.9177067}
+  m_Size: {x: 0.6782379, y: 2.9177067}
   m_EdgeRadius: 0
 --- !u!114 &2696561961088074856
 MonoBehaviour:
@@ -835,7 +835,7 @@ MonoBehaviour:
     maximumInterval: 2
     visualizeSensitivity: 0
   targetCompatibility: {fileID: 0}
-  maxAcceleration: 1
+  maxAcceleration: -2.5
   rotationSpeed: 360
   slowdownDistance: 0
   pickNextWaypointDist: 2
